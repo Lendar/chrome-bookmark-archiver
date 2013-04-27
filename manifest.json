@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Chrome Bookmark Archiver",
+  "description": "-",
+  "version": "0.1",
+
+  "permissions": [
+    "bookmarks",
+    "management",
+    "alarms"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["archiver.js", "event-page.js"],
+    "persistent": false
+  }
+}
