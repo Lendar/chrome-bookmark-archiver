@@ -33,7 +33,7 @@ var ArchiverView = {
   },
   displayItem: function (bookmark) {
     var el = document.createElement('div');
-    var year = new Date(bookmark.dateAdded).getFullYear();
+    var year = Archiver.getYear(bookmark);
     el.classList.add('bookmark-title');
     el.textContent = '[' + year + '] ' + bookmark.title;
     document.body.appendChild(el);
