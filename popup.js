@@ -12,6 +12,7 @@ var Foreman = {
     el.onclick = function() {
       Foreman.start();
       Foreman.displayStatus();
+      Archiver.arrangeBookmarks();
     };
   },
   displayStatus: function() {
@@ -31,11 +32,19 @@ var ArchiverView = {
       ArchiverView.displayList(arr);
     });
   },
-  displayItem: function (bookmark) {
+  moveBookmark: function(message) {
+    var bookmark = message.bookmark;
+    var folder = message.folder;
     var el = document.createElement('div');
-    var year = Archiver.getYear(bookmark);
     el.classList.add('bookmark-title');
-    el.textContent = '[' + year + '] ' + bookmark.title;
+    el.textContent = bookmark.title + '->' + folder.title;
+    document.body.appendChild(el);
+  },
+  createFolder: function (message) {
+    var folder = message;
+    var el = document.createElement('div');
+    el.classList.add('bookmark-title');
+    el.textContent = '* New folder: ' + folder.title;
     document.body.appendChild(el);
   },
   displayList: function(bookmarks) {
@@ -46,11 +55,29 @@ var ArchiverView = {
         ArchiverView.displayItem(bookmark);
       }
     });
+  },
+  clear: function() {
+    // document.
   }
 };
 
+// TODO: display everything on view
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.arrangeBookmarks) {
+    ArchiverView.clear();
+  }
+  if (request.createFolder) {
+    ArchiverView.createFolder(request.createFolder);
+  }
+  if (request.moveBookmark) {
+    ArchiverView.moveBookmark(request.moveBookmark);
+  }
+  return;
+});
+
 document.addEventListener('DOMContentLoaded', function () {
-  ArchiverView.loadAndDisplayBookmarks();
   Foreman.bindEvents();
   Foreman.displayStatus();
+  // similar to: ArchiverView.loadAndDisplayBookmarks();
+  Archiver.arrangeBookmarks();
 });
