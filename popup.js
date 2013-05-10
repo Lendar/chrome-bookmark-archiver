@@ -26,12 +26,6 @@ var Foreman = {
 };
 
 var ArchiverView = {
-  loadAndDisplayBookmarks: function() {
-    chrome.bookmarks.getTree(function(arr) {
-      document.getElementById('loading').remove();
-      ArchiverView.displayList(arr);
-    });
-  },
   moveBookmark: function(message) {
     var bookmark = message.bookmark;
     var folder = message.folder;
@@ -47,21 +41,11 @@ var ArchiverView = {
     el.textContent = '* New folder: ' + folder.title;
     document.body.appendChild(el);
   },
-  displayList: function(bookmarks) {
-    bookmarks.forEach(function(bookmark) {
-      if (bookmark.children)
-        ArchiverView.displayList(bookmark.children);
-      else {
-        ArchiverView.displayItem(bookmark);
-      }
-    });
-  },
   clear: function() {
-    // document.
+    document.getElementById('loading').remove();
   }
 };
 
-// TODO: display everything on view
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.arrangeBookmarks) {
     ArchiverView.clear();
@@ -78,6 +62,5 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 document.addEventListener('DOMContentLoaded', function () {
   Foreman.bindEvents();
   Foreman.displayStatus();
-  // similar to: ArchiverView.loadAndDisplayBookmarks();
   Archiver.arrangeBookmarks();
 });

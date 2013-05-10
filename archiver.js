@@ -20,7 +20,7 @@ var Archiver = window.Archiver = {
   findYearlyArchiveFolders: function (folder) {
     var folders_by_year = {};
     folder.children.forEach(function(bookmark) {
-      if(/^(19\d\d|20\d\d)$/.exec(bookmark.title)) {
+      if (/^(19\d\d|20\d\d)$/.exec(bookmark.title)) {
         folders_by_year[bookmark.title] = bookmark;
       }
     });
@@ -34,7 +34,7 @@ var Archiver = window.Archiver = {
       title: title,
       parent: parent
     }});
-    if(Archiver.getQuota()) {
+    if (Archiver.getQuota()) {
       console.debug('creating folder %s inside folder id:%s', title, parent.id);
       chrome.bookmarks.create({'parentId': parent.id, 'title': title});
       Archiver.incrQuota(-1);
@@ -46,7 +46,7 @@ var Archiver = window.Archiver = {
       bookmark: bookmark,
       folder: folder
     }});
-    if(Archiver.getQuota()) {
+    if (Archiver.getQuota()) {
       console.debug('moving %s to %s', bookmark.id, folder.id);
       chrome.bookmarks.move(bookmark.id, {parentId: folder.id});
       Archiver.incrQuota(-1);
