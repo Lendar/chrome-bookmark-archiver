@@ -7,20 +7,36 @@ var Foreman = {
     Archiver.progress(0, 100);
     chrome.alarms.create({delayInMinutes: 1});
   },
+  stop: function() {
+    Archiver.progress(100, 100);
+    chrome.alarms.clearAll();
+  },
   bindEvents: function() {
     var el = document.getElementById('start');
     el.onclick = function() {
-      Foreman.start();
-      Foreman.displayStatus();
-      Archiver.arrangeBookmarks();
+      chrome.alarms.getAll(function(alarms) {
+        if (alarms.length > 0) {
+          Foreman.stop();
+          Foreman.displayStatus();
+        } else {
+          Foreman.start();
+          Foreman.displayStatus();
+          Archiver.arrangeBookmarks();
+        }
+      });
     };
   },
   displayStatus: function() {
     var el = document.getElementById('foreman');
-    el.textContent = 'Loading timers...';
     chrome.alarms.getAll(function(alarms) {
-      document.getElementById('start').disabled = alarms.length > 0;
-      el.textContent = alarms.length > 0 ? 'running' : '';
+      var btn = document.getElementById('start');
+      if (alarms.length > 0) {
+        btn.textContent = btn.dataset.stopText;
+        el.textContent = el.dataset.runningText;
+      } else {
+        btn.textContent = btn.dataset.startText;
+        el.textContent = "";
+      }
     });
   }
 };
@@ -31,7 +47,7 @@ var ArchiverView = {
     var folder = message.folder;
     var el = document.createElement('div');
     el.classList.add('bookmark-title');
-    el.textContent = bookmark.title + '->' + folder.title;
+    el.textContent = folder.title + ' <- ' + bookmark.title;
     document.body.appendChild(el);
   },
   createFolder: function (message) {
