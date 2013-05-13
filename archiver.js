@@ -4,12 +4,29 @@
 /*global window*/
 
 var Archiver = window.Archiver = {
-  progress: function (done, total) {
-    if (done < total) {
-      chrome.browserAction.setBadgeText({text: Math.round(done/total*100)+'%'});
-    } else {
-      chrome.browserAction.setBadgeText({text: ''});
-    }
+  start: function() {
+    Archiver.calcProgress();
+    chrome.alarms.create({delayInMinutes: 1});
+  },
+  stop: function() {
+    Archiver.progress(0);
+    chrome.alarms.clearAll();
+  },
+  progress: function(left) {
+    var text = left ? Math.min(9999, left) : "";
+    chrome.browserAction.setBadgeText({text: text.toString()});
+  },
+  calcProgress: function() {
+    Archiver.progress(Archiver.getStats());
+  },
+  getStats: function() {
+    return parseInt(localStorage.stats, 10) || 0;
+  },
+  incrStats: function(delta) {
+    localStorage.stats = Archiver.getStats() + delta;
+  },
+  resetStats: function() {
+    localStorage.stats = 0;
   },
   getQuota: function() {
     return parseInt(localStorage.quota_writes, 10) || 0;
@@ -60,6 +77,7 @@ var Archiver = window.Archiver = {
     bookmarks.forEach(function(bookmark, index, bookmarks) {
       var key = Archiver.getYear(bookmark);
       var folder = folders_by_year[key];
+      Archiver.incrStats(1);
       if (folder) {
         if (folder.id) {
           Archiver.moveBookmark(bookmark, folder);
@@ -80,10 +98,10 @@ var Archiver = window.Archiver = {
     });
   },
   arrangeBookmarks: function() {
+    Archiver.resetStats();
     chrome.runtime.sendMessage({arrangeBookmarks: true});
     chrome.bookmarks.getTree(function(arr) {
       Archiver.scan(arr);
     });
   }
 };
-

@@ -3,23 +3,15 @@
 /*global Archiver */
 
 var Foreman = {
-  start: function() {
-    Archiver.progress(0, 100);
-    chrome.alarms.create({delayInMinutes: 1});
-  },
-  stop: function() {
-    Archiver.progress(100, 100);
-    chrome.alarms.clearAll();
-  },
   bindEvents: function() {
     var el = document.getElementById('start');
     el.onclick = function() {
       chrome.alarms.getAll(function(alarms) {
         if (alarms.length > 0) {
-          Foreman.stop();
+          Archiver.stop();
           Foreman.displayStatus();
         } else {
-          Foreman.start();
+          Archiver.start();
           Foreman.displayStatus();
           Archiver.arrangeBookmarks();
         }
