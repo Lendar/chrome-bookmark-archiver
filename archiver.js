@@ -34,10 +34,17 @@ var Archiver = window.Archiver = {
   incrQuota: function(delta) {
     localStorage.quota_writes = Archiver.getQuota() + delta;
   },
+  isArchiveFolder: function(bookmark) {
+    if (bookmark.children && /^(19\d\d|20\d\d)$/.exec(bookmark.title)) {
+      return true;
+    } else {
+      return false;
+    }
+  },
   findYearlyArchiveFolders: function (folder) {
     var folders_by_year = {};
     folder.children.forEach(function(bookmark) {
-      if (/^(19\d\d|20\d\d)$/.exec(bookmark.title)) {
+      if (Archiver.isArchiveFolder(bookmark)) {
         folders_by_year[bookmark.title] = bookmark;
       }
     });
@@ -91,7 +98,7 @@ var Archiver = window.Archiver = {
   },
   scan: function(bookmarks) {
     bookmarks.forEach(function(bookmark) {
-      if (bookmark.children) {
+      if (bookmark.children && !Archiver.isArchiveFolder(bookmark)) {
         Archiver.arrangeFolder(bookmark);
         Archiver.scan(bookmark.children);
       }
