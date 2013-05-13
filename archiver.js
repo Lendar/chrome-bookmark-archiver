@@ -98,9 +98,9 @@ var Archiver = window.Archiver = {
     });
   },
   arrangeBookmarks: function() {
-    Archiver.resetStats();
     chrome.runtime.sendMessage({arrangeBookmarks: true});
     chrome.bookmarks.getTree(function(arr) {
+      Archiver.resetStats();
       Archiver.scan(arr);
     });
   }
